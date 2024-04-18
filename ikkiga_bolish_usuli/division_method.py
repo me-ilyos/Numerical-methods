@@ -1,15 +1,17 @@
+import math
+
 error = 0.001 
 
 def a_value(a):
     print(f"a: {a}")
-    return ((4 - a) + ((a-1)/(a+1) ** 1/3))
+    return pow(a, 3) - math.sin(a)
 
 def b_value(b):
     print(f"b: {b}")
-    return ((4 - b) + ((b-1)/(b+1) ** 1/3))
+    return pow(b, 3) - math.sin(b)
 
 while True:
-    a, b = [int(y) for y in input("a, b: ").split(',') ]
+    a, b = [float(y) for y in input("a, b: ").split(',') ]
     
     if a_value(a) * b_value(b) < 0:
         while True:
@@ -21,4 +23,5 @@ while True:
 
             if abs(a_value(a) - b_value(b)) < 0.001:
                 print(f"Tenglamani taqribiy echimi: {c}\nFarqi: {abs(a_value(a) - b_value(b))}")
+                
                 break
