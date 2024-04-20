@@ -1,17 +1,27 @@
 import sympy as sp
+import math
 
 error = 0.001
 
 
 def function_at_point(x):
     print(f"point x = {x}")
-    return pow(x, 3) - (x * 6) + 4
+    # return pow(x, 3) - (x * 6) + 4
+    # return ((4 - x) + ((x-1)/(x+1) ** 1/3))
+    # return (x**3 - math.sin(x))
+    return (x - 2 - x**(1/4))
 
 
 def function_at_point1(a):
     x = sp.Symbol('x')
 
-    derr = sp.diff(x**3 - 6*x + 4, x)
+    # derr1 = sp.diff(x**3 - 6*x + 4, x)
+
+    # derr = sp.diff(((4 - x) + ((x-1)/(x+1) ** 1/3)))
+
+    # derr = sp.diff(x**3 - sp.sin(x))
+    derr = sp.diff(x - 2 - x**(1/4))
+
     print(f"f'(x) = {derr}")
 
     return derr.subs(x, a)
