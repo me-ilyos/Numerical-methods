@@ -1,56 +1,69 @@
+from prettytable import PrettyTable
 import sympy as sp
+import math
 
-error = 0.001
+
+def fixed_decimal(value, decimals):
+    return f"{value:.{decimals}f}"
 
 
-def represent_function():
+def find_root_newton():
     x = sp.Symbol("x")
-    expr = x**3 - sp.sin(x)
-    print(expr)
-    return expr
-
-
-def function_at_point(a=None, b=None):
-    print(f"Point a: {a}") if a else f"Poin b: {b}"
-
-    x = sp.Symbol("x")
-    expr = represent_function()
-    return expr.subs(x, a if a else b)
-
-
-def derr_function_at_point(point):
-    x = sp.Symbol("x")
-    expr = represent_function()
-    print("A: ", expr)
-    derr = sp.diff(expr, point)
-
-    print(f"f'(x) = {derr}")
-
-    return derr.subs(x, point)
-
-
-def main():
-    x0 = 0
-
-    a, b = [float(y) for y in input("a, b: ").split(",")]
-
-    c = a - function_at_point(a) * (
-        (b - a) / (function_at_point(b) - function_at_point(a))
-    )
-
-    if function_at_point(a) * function_at_point(c) < 0:
-        x0 = a
-    else:
-        x0 = b
 
     while True:
-        x = x0 - function_at_point(x0) / derr_function_at_point(x0)
+        func_str = input("Funksiyani x ga nisbatan kiriting: ")
 
-        if abs(x - x0) < error:
-            return x
+        def get_func_from_user():
+            f_expr = sp.sympify(func_str)
+            f_derivative = sp.diff(f_expr, x)
+            f = sp.lambdify(x, f_expr, modules=["math"])
+
+            return f, f_expr, f_derivative
+
+        fx, function_expression, function_derivative = get_func_from_user()
+
+        a, b, error = [
+            float(y)
+            for y in input(
+                "Quyidagilarni kiriting a, b, error (a va b yechimga ega bolishi kerak.): "
+            ).split(",")
+        ]
+
+        if fx(a) * fx(b) < 0:
+            break
         else:
-            x0 = x
+            print("a va b yechimga ega emas. Boshqatdan kiriting.")
+
+    print(f"\n\n(a,b) = [{a}, {b}], error = {error}")
+    print(f"***\nFunction derivative: {function_derivative}\n***")
+
+    table = PrettyTable(["n", "x_n", "f(x_n)", "f'(x_n)"])
+
+    n = 0
+
+    c = a - fx(a) * ((b - a) / (fx(a) * fx(b)))
+    x_0 = a if fx(a) * fx(c) < 0 else b
+
+    while True:
+        n += 1
+        fxn_derivative = function_derivative.subs(x, x_0)
+        xn = x_0 - (fx(x_0) / fxn_derivative)
+        fxn = fx(xn)
+        table.add_row(
+            [
+                n,
+                fixed_decimal(xn, 7),
+                fixed_decimal(fxn, 7),
+                fixed_decimal(fxn_derivative, 7),
+            ]
+        )
+
+        if abs(xn - x_0) <= error:
+            print(table)
+            break
+        else:
+            x_0 = xn
 
 
 if __name__ == "__main__":
-    main()
+    find_root_newton()

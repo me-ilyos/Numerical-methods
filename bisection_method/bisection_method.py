@@ -31,10 +31,12 @@ def find_root_bisection():
             ).split(",")
         ]
 
-        if fx(a) * fx(b) >= 0:
-            print("a va b yechimga ega emas. Boshqatdan kiriting.")
-        else:
+        # print(fx(a), fx(b))
+
+        if fx(a) * fx(b) < 0:
             break
+        else:
+            print("a va b yechimga ega emas. Boshqatdan kiriting.")
     n = 0
 
     print(f"\n\n(a,b) = [{a}, {b}], error = {error}")

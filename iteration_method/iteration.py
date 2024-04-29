@@ -1,32 +1,49 @@
+from prettytable import PrettyTable
 import sympy as sp
-
-x = sp.Symbol("x")
-
-
-x0, error = [float(y) for y in input("x0, error: ").split(",")]
+import math
 
 
-def function_at(x0):
+def fixed_decimal(value, decimals):
+    return f"{value:.{decimals}f}"
+
+
+def find_root_fixed_point():
     x = sp.Symbol("x")
-    expr = sp.cbrt((4 * x + 800))
 
-    return expr.subs(x, x0)
+    def get_functions_from_user():
+        f_str = input("f(x) = : ")
+        g_str = input("g(x) = : ")
 
+        f_expr = sp.sympify(f_str)
+        g_expr = sp.sympify(g_str)
+        f = sp.lambdify(x, f_expr, modules=["math"])
+        g = sp.lambdify(x, g_expr, modules=["math"])
 
-def function_at1(x0):
-    x = sp.Symbol("x")
-    expr = 0.1 * (x**3) - 0.4 * x - 80
+        return f, f_expr, g
 
-    return expr.subs(x, x0)
+    f, f_expr, g = get_functions_from_user()
 
+    x0, error = [float(y) for y in input("x0, error: ").split(",")]
 
-while True:
-    x = function_at(x0)
+    table = PrettyTable(["n", "x_n", "f(x_n)", "g(x_n)"])
+    n = 0
 
-    if abs(x - x0) < error:
-        print(f"{x} | {function_at1(x): 6.8f}")
-        break
-    else:
-        # print(x0, function_at1(x), sep=" ||| ")
-        print(f"{x0} | {function_at1(x): 6.5f}")
+    while True:
+        n += 1
+        x = g(x0)
+        fx = f(x0)
+
+        table.add_row(
+            [n, fixed_decimal(x, 7), fixed_decimal(fx, 7), fixed_decimal(x0, 7)]
+        )
+
+        if abs(fx) < error:  # Check convergence based on f(x)
+            print(table)
+            print(f"Approximate root: {x}")
+            break
+
         x0 = x
+
+
+if __name__ == "__main__":
+    find_root_fixed_point()
